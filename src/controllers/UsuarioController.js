@@ -1,11 +1,12 @@
+const bcrypt = require("bcrypt");
 const UsuarioModel = require("../models/UsuarioModel");
 
-function listarUsuarios(req, res) {
+async function listarUsuarios(req, res) {
     const usuarios = UsuarioModel.ListarUsuarios();
     res.json(usuarios);
 }
 
-function buscarUsuarioPorId(req, res) {
+async function buscarUsuarioPorId(req, res) {
     const { id } = req.params;
 
     const usuario = UsuarioModel.BuscarUsuarioPorId(id);
@@ -19,19 +20,30 @@ function buscarUsuarioPorId(req, res) {
     res.json(usuario);
 }
 
-function criarUsuario(req, res) {
-    const { nome, email, telefone } = req.body;
+async function criarUsuario(req, res) {
+    const { nome, email, senha, telefone } = req.body;
+
+    const usuarioExistente = UsuarioModel.BuscarUsuarioPorEmail(email);
+
+    if (usuarioExistente) {
+        return res.status(400).json({
+            mensagem: "E-mail já cadastrado"
+        });
+    }
+
+    const senhaCriptografada = await bcrypt.hash(senha, 10);
 
     const usuario = UsuarioModel.CriarUsuario(
         nome,
         email,
+        senhaCriptografada,
         telefone
     );
 
     res.status(201).json(usuario);
 }
 
-function atualizarUsuario(req, res) {
+async function atualizarUsuario(req, res) {
     const { id } = req.params;
     const { nome, email, telefone } = req.body;
 
@@ -53,7 +65,7 @@ function atualizarUsuario(req, res) {
     });
 }
 
-function deletarUsuario(req, res) {
+async function deletarUsuario(req, res) {
     const { id } = req.params;
 
     const resultado = UsuarioModel.DeletarUsuario(id);

@@ -31,25 +31,17 @@ function CriarEmprestimo(livro_id, usuario_id, data_emprestimo) {
 }
 
 function BuscarLivroPorId(id) {
-    return db.prepare(
-        "SELECT * FROM livros WHERE id = ?"
-    ).get(id);
-}
-
-function AtualizarDisponiveis(livro_id, disponiveis) {
     return db.prepare(`
-        UPDATE livros
-        SET disponiveis = ?
+        SELECT *
+        FROM livros
         WHERE id = ?
-    `).run(
-        disponiveis,
-        livro_id
-    );
+    `).get(id);
 }
 
 function BuscarEmprestimoPorId(id) {
     return db.prepare(`
-        SELECT * FROM emprestimos
+        SELECT *
+        FROM emprestimos
         WHERE id = ?
     `).get(id);
 }
@@ -82,7 +74,6 @@ module.exports = {
     ListarEmprestimos,
     CriarEmprestimo,
     BuscarLivroPorId,
-    AtualizarDisponiveis,
     BuscarEmprestimoPorId,
     DevolverEmprestimo,
     AtualizarDisponiveisLivro

@@ -2,20 +2,16 @@ const express = require("express");
 const router = express.Router();
 
 const LivroController = require("../controllers/LivroController");
+const autenticarToken = require("../middleware/AuthMiddleware");
 
+router.get("/", autenticarToken, LivroController.listarLivros);
 
-router.get("/", LivroController.listarLivros);
+router.get("/:id", autenticarToken, LivroController.buscarLivroPorId);
 
+router.post("/", autenticarToken, LivroController.criarLivro);
 
-router.get("/:id", LivroController.buscarLivroPorId);
+router.patch("/:id", autenticarToken, LivroController.atualizarLivro);
 
-
-router.post("/", LivroController.criarLivro);
-
-
-router.patch("/:id", LivroController.atualizarLivro);
-
-
-router.delete("/:id", LivroController.deletarLivro);
+router.delete("/:id", autenticarToken, LivroController.deletarLivro);
 
 module.exports = router;

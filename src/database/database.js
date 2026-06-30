@@ -2,7 +2,6 @@ const Database = require("better-sqlite3");
 
 const db = new Database("biblioteca.db");
 
-
 db.prepare(`
 CREATE TABLE IF NOT EXISTS livros (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -13,16 +12,23 @@ CREATE TABLE IF NOT EXISTS livros (
 )
 `).run();
 
-
 db.prepare(`
 CREATE TABLE IF NOT EXISTS usuarios (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nome TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
+    senha TEXT,
     telefone TEXT NOT NULL
 )
 `).run();
 
+const colunasUsuarios = db.prepare("PRAGMA table_info(usuarios)").all();
+
+const existeSenha = colunasUsuarios.some(coluna => coluna.name === "senha");
+
+if (!existeSenha) {
+    db.prepare("ALTER TABLE usuarios ADD COLUMN senha TEXT").run();
+}
 
 db.prepare(`
 CREATE TABLE IF NOT EXISTS emprestimos (

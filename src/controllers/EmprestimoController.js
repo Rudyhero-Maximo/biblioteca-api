@@ -30,7 +30,7 @@ function criarEmprestimo(req, res) {
         data_emprestimo
     );
 
-    EmprestimoModel.AtualizarDisponiveis(
+    EmprestimoModel.AtualizarDisponiveisLivro(
         livro_id,
         livro.disponiveis - 1
     );
@@ -48,6 +48,12 @@ function devolverEmprestimo(req, res) {
     if (!emprestimo) {
         return res.status(404).json({
             mensagem: "Empréstimo não encontrado"
+        });
+    }
+
+    if (emprestimo.status === "DEVOLVIDO") {
+        return res.status(400).json({
+            mensagem: "Este empréstimo já foi devolvido"
         });
     }
 
